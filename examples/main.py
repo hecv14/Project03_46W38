@@ -1,16 +1,19 @@
-#%% imports
-import os
-import xarray as xr
+#%% Imports
+import sys
+sys.path.append('../src')
 
-#%% open nc
-folder_inputs = "../inputs"
-filename_nc = "1997-1999.nc"
-filepath = os.path.join(folder_inputs, filename_nc)
-
-ds = xr.open_dataset(filepath)
-print(ds)
+from module_WRA_EYA import load_ncs, derive_vel, ws_hor_interpolation
 
 # %%
-u10 = ds['u10'].values
+# load_ncs
+ds = load_ncs()
+
+# add ws and wd
+derive_vel(ds)
+
+# %%
+lat = 55.6
+lon = 7.9
+ws10_target, ws100_target = ws_hor_interpolation(ds, lat, lon)
 
 # %%
