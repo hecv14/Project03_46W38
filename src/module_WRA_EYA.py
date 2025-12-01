@@ -1,7 +1,7 @@
-# Module's imports
+#%% Module's imports
 import xarray as xr
 from glob import glob
-#import numpy as np
+import numpy as np
 #import pandas as pd
 
 #%% Module's Custom Functions
@@ -28,21 +28,74 @@ def load_ncs(input_nc_folder = '../inputs',
     return ds_sliced
 
 
-def derive_vel(ds, u, v):
-    """Compute wind speed and wind direction based on u and v-components
-    of wind."""
-    
-    pass
+def derive_vel(ds):
+    """
+    Compute wind speed and wind direction based on u and v-components
+    of wind at 10 and 100m. Add to input ds.
+    """
+    hs = [10, 100]
+
+    for h in hs:
+        # Concatenate the u and v names
+        u_name = f"u{h}"
+        v_name = f"v{h}"
+
+        # Calculate wind speed
+        ws = np.sqrt(ds[u_name]2 + ds[v_name]2)
+        ws_name = f'ws{h}'
+        # Add to ds
+        ds[ws_name] = ws
+
+        # Calculate wind direction
+        wd_name = f'wd{h}'
+        wd = (270 - np.degrees(np.arctan2(ds[v_name], ds[u_name]))) % 360
+        # Add to ds
+        ds[wd_name] = wd
+
+    return ds
 
 
-def horiz_extrap(x, y, t_start=1997, t_end=1998):
-    """Compute wind speed and wind direction time series at 10 m and
-    100 m heights for a given location inside the box bounded by the
-    four locations, such as the Horns Rev 1 site, using interpolation."""
-    pass
+def ws_hor_interpolation(ds, lat_target, lon_target, exp=2):
+    """
+    Compute wind speed time series at 10 m and 100 m heights for a given
+    location inside the box bounded by the 4 locations using interpolation.
+    Option for inv. distance or dist. squared via exponent.
+    """
+    # Extract ws10 and ws100 from the dataset
+    ws10 = ds['ws10']
+    ws100 = ds['ws100']
+
+    # Define auxiliary function
+    def inv_dist_weighted_interpolation(ds_var, lat_target, lon_target, exponent):
+        """
+        Perform inverse distance weighted interpolation.
+        """
+        # Calculate the distances
+        lat_delta = (ds_var['latitude'] - lat_target)
+        lon_delta = (ds_var['longitude'] - lon_target)
+        distances = (lat_delta  2 + lon_delta  2) ** 0.5
+
+        # Avoid division by zero
+        distances = distances.where(distances > 0, 1e-10)
+
+        # Calculate weighting
+        weights = 1 / (distances ** exponent)
+
+        # Normalize weighting
+        weights = weights / weights.sum()
+
+        # Perform weighted interpolation
+        interpolated_value = (ds_var * weights).sum(dim=('latitude', 'longitude'))
+
+        return interpolated_value
+
+    ws10_target = inv_dist_weighted_interpolation(ws10, lat_target, lon_target, exp)
+    ws100_target = inv_dist_weighted_interpolation(ws100, lat_target, lon_target, exp)
+
+    return ws10_target, ws100_target
 
 
-def vert_extrap(z1, z2, zh, t_start=1997, t_end=1998):
+def ws_vert_interpolation(z1, z2, zh, t_start=1997, t_end=1998):
     """Compute wind speed time series at height z for a given location
     inside the box bounded by the four locations using power law profile."""
     pass
@@ -75,3 +128,5 @@ def gross_aep(wsp, pc):
 # Note that for the tasks listed in points 3-7, the functions should be able to
 # specify the starting year (default to be 1997) and ending year (default to be
 # 2008), thus defining which years' data to be used.
+
+# %%
