@@ -1,51 +1,25 @@
 # Project03_46W38
-A simple demonstration of Wind Resource and Energy Yield Assessment based on
-Reanalysis Data. You may also refer the short project report [link here when done].
+A simple demonstration of Wind Resource and Energy Yield Assessment based on Reanalysis Data. You may also refer the short project report.
 
 ## Folder Structure
    ```
    Project03_46W38
    ├── inputs/
-   │   ├── data_files_we_provide
-   │   └── data_files_you_found (optional)
-   ├── outputs/
-   │   └── data_files_you_generate (no need to push to Github)
+   │   └── resource files (.nc) and power curves (.csv)
    ├── src/
-   │   └── your_python_module_or_package_codes
+   │   └── WRA and EPE module
    ├── tests/
-   │   └── python_scripts_you_write_for_tests
+   │   └── TODO
    ├── examples/
-   │   ├── main.py (will run in evaluation)
-   │   └── other_example_scripts_you_write (optional)
+   │   └── main.py (runs in evaluation)
    ├── .gitignore
    ├── LICENSE
    ├── README.md
-   ├── pyproject.toml (optional, needed if you have packaged your code)
-   └── any_other_files_you_may_want (optional)
+   └── Project 03 Report.pdf
    ```
 
-The `main.py` script inside the `examples` folder demonstrates, in a
-clear and structured manner, how the required functions are called and 
-executed.
-
-## Module/Package Overview
-* Brief overview of the module/package
-* A description of the class(es) you have implemented in your package, with
-clear reference to the file name of the code inside `src`.
-
-## Module/Package Architecture
-A description of the module/package architecture, with **at least one diagram**. 
+The `main.py` script inside the `examples` folder demonstrates, in a clear and structured manner, how the required functions are called and executed.
 
 ## Installation Instructions
-* (Optional) Installation instructions if you have packaged your code.
-
-## Other
-* Test coverage of the module/package should be higher than 70%, as evaluated using
-`pytest-cov` on the `src` folder, by running:
-   ```
-   pytest --cov=src tests/
-   ```
-
-
-
-
+* The ENV.yml contains the packages required. In bash run: $ conda env create -n ENVNAME --file ENV.yml.
+* Run also: pip install windrose
